@@ -26,10 +26,10 @@ public class User {
     @Column(name = "user_name")
     private String name;
 
-    @Column(name = "user_email", nullable = false, unique = true)
+    @Column(name = "user_email")
     private String email;
 
-    @Column(name = "user_password", nullable = false, unique = true)
+    @Column(name = "user_password")
     private String password;
 
     @Column(name = "about_user")
