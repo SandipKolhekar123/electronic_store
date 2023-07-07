@@ -1,5 +1,6 @@
 package com.mobicoolsoft.electronic.store.controller;
 
+import com.mobicoolsoft.electronic.store.config.AppConstants;
 import com.mobicoolsoft.electronic.store.dto.ApiResponseMessage;
 import com.mobicoolsoft.electronic.store.dto.UserDto;
 import com.mobicoolsoft.electronic.store.service.UserServiceI;
@@ -16,18 +17,18 @@ import java.util.List;
  * @since 2021
  */
 @RestController
-@RequestMapping("/api/users/")
+@RequestMapping(AppConstants.USER_URL)
 public class UserController {
     @Autowired
     private UserServiceI userServiceI;
 
     /**
      * @apiNote create new user record in database
-     * @P
      * @implNote method input user object and return saved user record
      */
     @PostMapping("/")
     public ResponseEntity<UserDto> createNewUser(@RequestBody UserDto userDto){
+
         UserDto newUserDto = this.userServiceI.createUser(userDto);
         return new ResponseEntity<>(newUserDto, HttpStatus.CREATED);
     }
@@ -49,12 +50,12 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponseMessage> deleteUser(@PathVariable String userId){
         this.userServiceI.deleteUser(userId);
-        ApiResponseMessage message1 = ApiResponseMessage.builder()
-                .message("User deleted successfully!")
+        ApiResponseMessage responseMessage = ApiResponseMessage.builder()
+                .message(AppConstants.DELETE_MSG)
                 .success(true)
                 .status(HttpStatus.OK)
                 .build();
-        return new ResponseEntity<ApiResponseMessage>(message1, HttpStatus.OK);
+        return new ResponseEntity<ApiResponseMessage>(responseMessage, HttpStatus.OK);
     }
 
 

@@ -5,17 +5,22 @@ import com.mobicoolsoft.electronic.store.entity.User;
 import com.mobicoolsoft.electronic.store.exception.ResourceNotFoundException;
 import com.mobicoolsoft.electronic.store.repository.UserRepository;
 import com.mobicoolsoft.electronic.store.service.UserServiceI;
-import lombok.Builder;
-import lombok.Synchronized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
+/**
+ * @author Sandip Kolhekar
+ * @apiNote User services implementing  class
+ * @since 2021
+ */
 @Service
 public class UserServiceImpl implements UserServiceI {
+
+    private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -27,11 +32,15 @@ public class UserServiceImpl implements UserServiceI {
     public UserDto createUser(UserDto userDto) {
         //generate unique id in string format. A class that represents an immutable
         // universally unique identifier (UUID). A UUID represents a 128-bit value.
+        logger.info("createUser method execution started with input {}", userDto);
         String userId = UUID.randomUUID().toString();
+        logger.info("userId generated {}", userId);
         userDto.setUserId(userId);
         User user = this.userDtoToEntity(userDto);
         User savedUser = this.userRepository.save(user);
+        logger.info("saved user {}", savedUser);
         UserDto savedUserDto = this.entityToUserDto(savedUser);
+        logger.info("method execution ended...");
         return savedUserDto;
     }
 
@@ -40,7 +49,9 @@ public class UserServiceImpl implements UserServiceI {
      */
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
+        logger.info("updateUser method started for {}",userId);
         User user = this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "UserID", userId));
+        logger.info("User find for Id {}", userId);
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
         user.setPassword(userDto.getPassword());
@@ -48,8 +59,9 @@ public class UserServiceImpl implements UserServiceI {
         user.setGender(userDto.getGender());
         user.setImage(userDto.getImage());
         User savedUser = this.userRepository.save(user);
-        System.out.println(savedUser);
+        logger.info("User saved successfully {}", savedUser);
         UserDto updatedUserDto = this.entityToUserDto(savedUser);
+        logger.info("execution ended...");
         return updatedUserDto;
     }
 
@@ -58,8 +70,11 @@ public class UserServiceImpl implements UserServiceI {
      */
     @Override
     public void deleteUser(String userId) {
+        logger.info("delete method execution started...");
         User user = this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "UserID", userId));
+        logger.info("User found for userId : {}", userId);
         this.userRepository.delete(user);
+        logger.info("delete method execution ended...");
     }
 
     /**
@@ -67,8 +82,11 @@ public class UserServiceImpl implements UserServiceI {
      */
     @Override
     public List<UserDto> getAllUsers() {
+        logger.info("getAllUsers method execution started...");
         List<User> users = this.userRepository.findAll();
+        logger.info("find all user successfully");
         List<UserDto> userDtos = users.stream().map((user) -> this.entityToUserDto(user)).collect(Collectors.toList());
+        logger.info("getAllUsers method execution ended...");
         return userDtos;
     }
 
