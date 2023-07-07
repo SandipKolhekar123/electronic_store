@@ -1,12 +1,10 @@
 package com.mobicoolsoft.electronic.store.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 /**
  * @author Sandip Kolhekar
@@ -24,11 +22,11 @@ public class UserDto {
     private String userId;
 
     @NotEmpty
-    @Size(min = 4, max = 50, message = "Username must be atleast 4 characters !")
+    @Size(min = 4, max = 50, message = "Username must be at least 4 characters !")
     private String name;
 
     @Email
-    @NotEmpty
+    @NotEmpty(message = "Email should not be empty or null !")
     private String email;
 
     @NotEmpty
@@ -41,4 +39,5 @@ public class UserDto {
     private String gender;
 
     private String image;
+
 }

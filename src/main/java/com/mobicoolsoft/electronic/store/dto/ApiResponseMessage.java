@@ -1,12 +1,11 @@
 package com.mobicoolsoft.electronic.store.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 @AllArgsConstructor
 @Setter
@@ -19,4 +18,5 @@ public class ApiResponseMessage {
     private Boolean success;
 
     private HttpStatus status;
+
 }
