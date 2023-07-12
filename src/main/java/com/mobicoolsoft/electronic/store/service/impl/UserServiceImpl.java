@@ -3,11 +3,17 @@ package com.mobicoolsoft.electronic.store.service.impl;
 import com.mobicoolsoft.electronic.store.dto.UserDto;
 import com.mobicoolsoft.electronic.store.entity.User;
 import com.mobicoolsoft.electronic.store.exception.ResourceNotFoundException;
+import com.mobicoolsoft.electronic.store.dto.PageResponse;
+import com.mobicoolsoft.electronic.store.helper.PageHelper;
 import com.mobicoolsoft.electronic.store.repository.UserRepository;
 import com.mobicoolsoft.electronic.store.service.UserServiceI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
@@ -27,15 +33,15 @@ public class UserServiceImpl implements UserServiceI {
      */
     @Override
     public UserDto createUser(UserDto userDto) {
-        //generate unique id in string format. A class that represents an immutable
-        // universally unique identifier (UUID). A UUID represents a 128-bit value.
+//        generate unique id in string format. A class that represents an immutable
+//         universally unique identifier (UUID). A UUID represents a 128-bit value.
         logger.info("createUser service execution started");
         String userId = UUID.randomUUID().toString();
         logger.info("userId generated : {}", userId);
         userDto.setUserId(userId);
         User user = this.userDtoToEntity(userDto);
         User savedUser = this.userRepository.save(user);
-        logger.info("saved user successfully");
+        logger.info("user saved successfully");
         UserDto savedUserDto = this.entityToUserDto(savedUser);
         logger.info("createUser service execution ended...");
         return savedUserDto;
@@ -77,13 +83,22 @@ public class UserServiceImpl implements UserServiceI {
      * @implNote get all users
      */
     @Override
-    public List<UserDto> getAllUsers() {
+    public PageResponse<UserDto> getAllUsers(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         logger.info("getAllUsers service execution started");
-        List<User> users = this.userRepository.findAll();
-        logger.info("users get successfully");
-        List<UserDto> userDtos = users.stream().map((user) -> this.entityToUserDto(user)).collect(Collectors.toList());
-        logger.info("getAllUsers service execution ended");
-        return userDtos;
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        try{
+            //@implNote pageNumber default starts from 0
+            Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
+            logger.info("get Pageable object with pageNumber {}, pageSize {}", pageNumber, pageSize);
+            Page<User> page = this.userRepository.findAll(pageable);
+            logger.info("get Page object for User");
+            PageResponse<UserDto> pageResponse = PageHelper.getPageResponse(page, UserDto.class);
+            logger.info("get PageResponse<UserDto> process successfully");
+            logger.info("getAllUsers service execution ended");
+            return pageResponse;
+        }catch (RuntimeException ex){
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -98,7 +113,6 @@ public class UserServiceImpl implements UserServiceI {
         logger.info("getUserById service execution ended");
         return userDto;
     }
-
     /**
      * @implNote get user by email
      */
@@ -111,9 +125,8 @@ public class UserServiceImpl implements UserServiceI {
         logger.info("getUserByEmail service execution started");
         return userDto;
     }
-
     /**
-     * @implNote search user
+     * @implNote get user by email and password
      */
     @Override
     public UserDto getUserByEmailAndPassword(String email, String password) {
@@ -124,9 +137,8 @@ public class UserServiceImpl implements UserServiceI {
         logger.info("getUserByEmailAndPassword service execution ended");
         return userDto;
     }
-
     /**
-     * @implNote search user
+     * @implNote search user by keyword
      */
     @Override
     public List<UserDto> byNameContaining(String keyword) {

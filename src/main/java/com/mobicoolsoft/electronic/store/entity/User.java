@@ -31,11 +31,11 @@ public class User {
     @Column(name = "user_password")
     private String password;
 
-    @Column(name = "about_user")
-    private String about;
-
     @Column(name = "user_gender")
     private String gender;
+
+    @Column(name = "about_user")
+    private String about;
 
     @Column(name = "user_image")
     private String image;

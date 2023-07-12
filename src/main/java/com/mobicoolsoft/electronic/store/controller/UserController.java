@@ -3,6 +3,7 @@ package com.mobicoolsoft.electronic.store.controller;
 import com.mobicoolsoft.electronic.store.config.AppConstants;
 import com.mobicoolsoft.electronic.store.dto.ApiResponseMessage;
 import com.mobicoolsoft.electronic.store.dto.UserDto;
+import com.mobicoolsoft.electronic.store.dto.PageResponse;
 import com.mobicoolsoft.electronic.store.service.UserServiceI;
 import com.mobicoolsoft.electronic.store.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
@@ -77,11 +78,16 @@ public class UserController {
      * @return user list
      */
     @GetMapping("/")
-    public ResponseEntity<List<UserDto>> getAllUsers(){
+    public ResponseEntity<PageResponse<UserDto>> getAllUsers(
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir)
+    {
         logger.info("Api getAllUsers request started");
-        List<UserDto> userDtos = this.userServiceI.getAllUsers();
+        PageResponse<UserDto> pageResponse = this.userServiceI.getAllUsers(pageNumber, pageSize, sortBy, sortDir);
         logger.info("Api getAllUsers request ended with response : {}", HttpStatus.OK);
-        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+        return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     /**

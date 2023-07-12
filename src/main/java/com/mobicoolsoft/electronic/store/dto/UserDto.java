@@ -1,9 +1,7 @@
 package com.mobicoolsoft.electronic.store.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import com.mobicoolsoft.electronic.store.validate.ImageNameValid;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 /**
@@ -21,23 +19,39 @@ public class UserDto {
 
     private String userId;
 
-    @NotEmpty
-    @Size(min = 4, max = 50, message = "Username must be at least 4 characters !")
+    @NotBlank
+    @Size(min = 4, max = 20, message = "Username must be at least 4 characters !")
     private String name;
 
-    @Email
-    @NotEmpty(message = "Email should not be empty or null !")
+    /**
+     * @implNote regex for email validation
+     */
+    @NotEmpty(message = "Email is required !")
+    @Pattern(regexp = "^[a-z0-9][-a-z0-9._]+@([-a-z0-9]+\\.)+[a-z]{2,5}$", message = "Please enter valid Email Id !")
     private String email;
 
-    @NotEmpty
+    /**
+     * @implNote regex for password validation
+     * 	^ - start-of-string
+     * 	(?=.*[0-9]) - a digit must occur at least once
+     * 	(?=.*[a-z]) - a lower case letter must occur at least once
+     *  (?=.*[A-Z]) - an upper case letter must occur at least once
+     *  (?=.*[@#$%^&]) - a special character must occur at least once
+     *	(?=\S+$) - no whitespace allowed in the entire string
+     * 	.{6,} - anything, at least six places
+     *	$ - end-of-string
+     */
+    @NotBlank(message = "password  is required !")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&])(?=\\S+$).{6,}$" , message = "Please enter valid password !")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    private String about;
-
+    @Size(min = 4, max = 6, message = "Invalid gender!")
     private String gender;
 
+    private String about;
+
+    @ImageNameValid
     private String image;
 
 }

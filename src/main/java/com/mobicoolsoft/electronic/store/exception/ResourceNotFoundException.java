@@ -1,9 +1,5 @@
 package com.mobicoolsoft.electronic.store.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
-
 
 public class ResourceNotFoundException extends  RuntimeException{
     private String resource;

@@ -1,10 +1,9 @@
 package com.mobicoolsoft.electronic.store.service;
 
 import com.mobicoolsoft.electronic.store.dto.UserDto;
-import com.mobicoolsoft.electronic.store.entity.User;
+import com.mobicoolsoft.electronic.store.dto.PageResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserServiceI {
 
@@ -26,7 +25,7 @@ public interface UserServiceI {
     /**
      * get all users
      */
-    public List<UserDto> getAllUsers();
+    public PageResponse<UserDto> getAllUsers(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
     /**
      * get user by id

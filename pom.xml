@@ -11,7 +11,7 @@
 	<groupId>com.mobicoolsoft.electronic.store</groupId>
 	<artifactId>ElectronicStore</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>ElectronicStore</name>
 	<description>Backend project for electronic store in spring boot</description>
 	<properties>
@@ -41,9 +41,9 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
