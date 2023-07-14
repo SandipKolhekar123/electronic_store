@@ -2,18 +2,28 @@ package com.mobicoolsoft.electronic.store.controller;
 
 import com.mobicoolsoft.electronic.store.config.AppConstants;
 import com.mobicoolsoft.electronic.store.dto.ApiResponseMessage;
+import com.mobicoolsoft.electronic.store.dto.ImageResponse;
 import com.mobicoolsoft.electronic.store.dto.UserDto;
 import com.mobicoolsoft.electronic.store.dto.PageResponse;
+import com.mobicoolsoft.electronic.store.service.FileServiceI;
 import com.mobicoolsoft.electronic.store.service.UserServiceI;
 import com.mobicoolsoft.electronic.store.service.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -28,6 +38,12 @@ public class UserController {
     @Autowired
     private UserServiceI userServiceI;
 
+    @Autowired
+    private FileServiceI fileServiceI;
+
+    @Value("${user.profile.image.path}")
+    private String imagePath;
+
     /**
      * @apiNote create new user record in database
      * @implNote method input user object and return user record
@@ -40,7 +56,6 @@ public class UserController {
         logger.info("Api createNewUser request ended with response : {}", HttpStatus.CREATED);
         return new ResponseEntity<>(newUserDto, HttpStatus.CREATED);
     }
-
     /**
      * @apiNote update existing user record of specified user id from database
      * @implNote method input user object, user id and return updated user record
@@ -53,12 +68,10 @@ public class UserController {
         logger.info("Api updateUser request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(updatedUserDto, HttpStatus.OK);
     }
-
     /**
      * @apiNote delete user of specified id from the database
      * @implNote method input user id and return response as string for success
      * @return response in {message, success, status}
-     *
      */
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponseMessage> deleteUser(@PathVariable String userId){
@@ -89,7 +102,6 @@ public class UserController {
         logger.info("Api getAllUsers request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
-
     /**
      * @apiNote get user record for specified id
      * @implNote method input user id and return single record
@@ -102,7 +114,6 @@ public class UserController {
         logger.info("Api getUserById request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
-
     /**
      * @apiNote get user record for matched email
      * @implNote method input user email and return matched user record
@@ -115,7 +126,6 @@ public class UserController {
         logger.info("Api getUserByEmail request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
-
     /**
      * @apiNote get user record for matched email and password
      * @implNote method input user email, password and return user record
@@ -130,7 +140,6 @@ public class UserController {
         logger.info("Api getUserByEmailAndPassword with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
-
     /**
      * @apiNote search user by keyword for username
      * @implNote method input user object and return saved user object
@@ -141,6 +150,44 @@ public class UserController {
         List<UserDto> userDtos = this.userServiceI.byNameContaining(keyword);
         logger.info("Api getUserByNameContaining request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    }
+    /**
+     * @implNote method to upload user image file
+     * @param userImage
+     * @param userId
+     * @return ResponseEntity<UserDto>
+     * @throws IOException
+     */
+    @PostMapping("/images/upload/{userId}")
+    public ResponseEntity<ImageResponse> uploadUserImage(@RequestParam("userImage")MultipartFile userImage,
+                                                         @PathVariable String userId) throws IOException {
+        logger.info("Api uploadUserImage request with image : {}", userImage);
+        UserDto userDto = this.userServiceI.getUserById(userId);
+        logger.info("user found with userId : {}", userId);
+        String uploadedUserImage = this.fileServiceI.uploadImage(imagePath, userImage);
+        logger.info("user image successfully upload on server!");
+        userDto.setImage(uploadedUserImage);
+        UserDto updatedUserDto = this.userServiceI.updateUser(userDto, userId);
+        logger.info("user image successfully saved in the database!");
+        ImageResponse imageResponse = ImageResponse.builder().imageName(uploadedUserImage).message(AppConstants.IMAGE_MSG).success(true).status(HttpStatus.CREATED).build();
+        logger.info("Api uploadUserImage request ended with response : {}", HttpStatus.OK);
+        return  new ResponseEntity<>(imageResponse, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/image/{userId}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    public void serveUserImage(@PathVariable String userId, HttpServletResponse response) throws IOException {
+        logger.info("Api serveUserImage request started with input response : {}", response);
+        UserDto user = this.userServiceI.getUserById(userId);
+        logger.info("get user image {}", user.getImage());
+        try{
+            InputStream image = this.fileServiceI.serveImage(imagePath, user.getImage());
+            response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+            StreamUtils.copy(image, response.getOutputStream());
+        }catch (IOException ex){
+            throw new FileNotFoundException(userId);
+        }
+
+        logger.info("Api serveUserImage request ended with input response : {}", response);
     }
 
 }

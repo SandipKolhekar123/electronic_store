@@ -1,5 +1,6 @@
 package com.mobicoolsoft.electronic.store.exception;
 
+import com.mobicoolsoft.electronic.store.config.AppConstants;
 import com.mobicoolsoft.electronic.store.dto.ApiResponseMessage;
 import com.mobicoolsoft.electronic.store.service.impl.UserServiceImpl;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponseMessage> handlerResourceNotFoundException(ResourceNotFoundException ex) {
-        logger.info("ResourceNotFoundException encounter");
+        logger.info("ResourceNotFoundException called");
         ApiResponseMessage responseMessage = ApiResponseMessage.builder()
                 .message(ex.getMessage())
                 .success(false)
@@ -43,9 +44,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponseMessage> handlerIllegalArgumentException(IllegalArgumentException ex) {
-        logger.info("IllegalArgumentException encounter");
+        logger.info("IllegalArgumentException called");
         ApiResponseMessage responseMessage = ApiResponseMessage.builder()
-                .message("PageSize OR PageNumber must not be less than zero.")
+                .message(AppConstants.PAGE_ERROR_MSG)
                 .success(false)
                 .status(HttpStatus.NOT_FOUND)
                 .build();
@@ -60,7 +61,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handlerMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        logger.info("MethodArgumentNotValidException encounter");
+        logger.info("MethodArgumentNotValidException called");
         Map<String, String> resp = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -70,4 +71,58 @@ public class GlobalExceptionHandler {
         });
         return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
     }
+    /**
+     * @author Sandip Kolhekar
+     * @param ex instance of StringIndexOutOfBoundsException
+     * @return apiResponseMessage instance of ApiResponseMessage
+     * @implNote StringIndexOutOfBoundsException handle globally through @ExceptionHandler
+     */
+    @ExceptionHandler(StringIndexOutOfBoundsException.class)
+    public ResponseEntity<ApiResponseMessage> handlerStringIndexOutOfBoundsException(StringIndexOutOfBoundsException ex) {
+        logger.info("StringIndexOutOfBoundsException called for empty file with index -1");
+        ApiResponseMessage responseMessage = ApiResponseMessage.builder()
+                .message(ex.getMessage())
+                .success(false)
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        logger.info("StringIndexOutOfBoundsException handled with response {}", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * @author Sandip Kolhekar
+     * @param ex instance of BadApiRequestException
+     * @return apiResponseMessage instance of ApiResponseMessage
+     * @implNote BadApiRequestException handle globally through @ExceptionHandler
+     */
+    @ExceptionHandler(BadApiRequestException.class)
+    public ResponseEntity<ApiResponseMessage> handlerBadApiRequestException(BadApiRequestException ex) {
+        logger.info("BadApiRequestException handler called");
+        ApiResponseMessage responseMessage = ApiResponseMessage.builder()
+                .message(ex.getMessage())
+                .success(false)
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        logger.info("BadApiRequestException handled with response {}", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * @author Sandip Kolhekar
+     * @param ex instance of BadApiRequestException
+     * @return apiResponseMessage instance of ApiResponseMessage
+     * @implNote BadApiRequestException handle globally through @ExceptionHandler
+     */
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<ApiResponseMessage> handlerFileNotFoundException(FileNotFoundException ex) {
+        logger.info("FileNotFoundException handler called");
+        ApiResponseMessage responseMessage = ApiResponseMessage.builder()
+                .message(ex.getMessage())
+                .success(false)
+                .status(HttpStatus.NOT_FOUND)
+                .build();
+        logger.info("BadApiRequestException handled with response {}", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+    }
+
 }
