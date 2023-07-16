@@ -42,16 +42,16 @@ public class GlobalExceptionHandler {
      * @return apiResponseMessage instance of ApiResponseMessage
      * @implNote IllegalArgumentException handle globally through @ExceptionHandler
      */
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponseMessage> handlerIllegalArgumentException(IllegalArgumentException ex) {
+    @ExceptionHandler(IllegalArgumentsException.class)
+    public ResponseEntity<ApiResponseMessage> handlerIllegalArgumentException(IllegalArgumentsException ex) {
         logger.info("IllegalArgumentException called");
         ApiResponseMessage responseMessage = ApiResponseMessage.builder()
-                .message(AppConstants.PAGE_ERROR_MSG)
+                .message(ex.getMessage())
                 .success(false)
-                .status(HttpStatus.NOT_FOUND)
+                .status(HttpStatus.BAD_REQUEST)
                 .build();
-        logger.info("IllegalArgumentException handled with response {}", HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
+        logger.info("IllegalArgumentException handled with response {}", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
     }
     /**
      * @author Sandip Kolhekar
@@ -73,24 +73,6 @@ public class GlobalExceptionHandler {
     }
     /**
      * @author Sandip Kolhekar
-     * @param ex instance of StringIndexOutOfBoundsException
-     * @return apiResponseMessage instance of ApiResponseMessage
-     * @implNote StringIndexOutOfBoundsException handle globally through @ExceptionHandler
-     */
-    @ExceptionHandler(StringIndexOutOfBoundsException.class)
-    public ResponseEntity<ApiResponseMessage> handlerStringIndexOutOfBoundsException(StringIndexOutOfBoundsException ex) {
-        logger.info("StringIndexOutOfBoundsException called for empty file with index -1");
-        ApiResponseMessage responseMessage = ApiResponseMessage.builder()
-                .message(ex.getMessage())
-                .success(false)
-                .status(HttpStatus.BAD_REQUEST)
-                .build();
-        logger.info("StringIndexOutOfBoundsException handled with response {}", HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * @author Sandip Kolhekar
      * @param ex instance of BadApiRequestException
      * @return apiResponseMessage instance of ApiResponseMessage
      * @implNote BadApiRequestException handle globally through @ExceptionHandler
@@ -109,20 +91,20 @@ public class GlobalExceptionHandler {
 
     /**
      * @author Sandip Kolhekar
-     * @param ex instance of BadApiRequestException
+     * @param ex instance of FileNotFoundException
      * @return apiResponseMessage instance of ApiResponseMessage
-     * @implNote BadApiRequestException handle globally through @ExceptionHandler
+     * @implNote FileNotFoundException handle globally through @ExceptionHandler
      */
-    @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<ApiResponseMessage> handlerFileNotFoundException(FileNotFoundException ex) {
+    @ExceptionHandler(FileNotAvailableException.class)
+    public ResponseEntity<ApiResponseMessage> handlerFileNotAvailableException(FileNotAvailableException ex) {
         logger.info("FileNotFoundException handler called");
         ApiResponseMessage responseMessage = ApiResponseMessage.builder()
                 .message(ex.getMessage())
                 .success(false)
                 .status(HttpStatus.NOT_FOUND)
                 .build();
-        logger.info("BadApiRequestException handled with response {}", HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+        logger.info("FileNotFoundException handled with response {}", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
     }
 
 }

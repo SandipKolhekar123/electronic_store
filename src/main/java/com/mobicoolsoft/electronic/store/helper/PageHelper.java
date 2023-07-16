@@ -18,10 +18,9 @@ public class PageHelper {
      * <U> source entity type
      * <V> target dto type
      * @param dtoType<V> act as a target class of type<V> for mapping
-     * @param page<U> object of page containing source entity class of type <U>
+     * @param page<U> object of page containing source entity class of entity type <U>
      * @return PageResponse<V> object of dtoType <V>
      */
-
     public static <U,V>PageResponse<V> getPageResponse(Page<U> page, Class<V> dtoType){
 
         List<U> entityList = page.getContent();

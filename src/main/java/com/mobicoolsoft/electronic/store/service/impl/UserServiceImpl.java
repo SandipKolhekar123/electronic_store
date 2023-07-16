@@ -1,7 +1,9 @@
 package com.mobicoolsoft.electronic.store.service.impl;
 
+import com.mobicoolsoft.electronic.store.config.AppConstants;
 import com.mobicoolsoft.electronic.store.dto.UserDto;
 import com.mobicoolsoft.electronic.store.entity.User;
+import com.mobicoolsoft.electronic.store.exception.IllegalArgumentsException;
 import com.mobicoolsoft.electronic.store.exception.ResourceNotFoundException;
 import com.mobicoolsoft.electronic.store.dto.PageResponse;
 import com.mobicoolsoft.electronic.store.helper.PageHelper;
@@ -90,14 +92,15 @@ public class UserServiceImpl implements UserServiceI {
             //@implNote pageNumber default starts from 0
             Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
             logger.info("get Pageable object with pageNumber {}, pageSize {}", pageNumber, pageSize);
-            Page<User> page = this.userRepository.findAll(pageable);
+            Page<User> userPage = this.userRepository.findAll(pageable);
             logger.info("get Page object for User");
-            PageResponse<UserDto> pageResponse = PageHelper.getPageResponse(page, UserDto.class);
+            PageResponse<UserDto> pageResponse = PageHelper.getPageResponse(userPage, UserDto.class);
             logger.info("get PageResponse<UserDto> process successfully");
             logger.info("getAllUsers service execution ended");
             return pageResponse;
         }catch (RuntimeException ex){
-            throw new IllegalArgumentException();
+            logger.info("IllegalArgumentException encounter");
+            throw new IllegalArgumentsException(AppConstants.PAGE_ERROR_MSG);
         }
     }
 
