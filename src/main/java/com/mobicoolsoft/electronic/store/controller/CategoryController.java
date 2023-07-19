@@ -1,13 +1,11 @@
 package com.mobicoolsoft.electronic.store.controller;
 
 import com.mobicoolsoft.electronic.store.config.AppConstants;
-import com.mobicoolsoft.electronic.store.dto.ApiResponseMessage;
-import com.mobicoolsoft.electronic.store.dto.CategoryDto;
-import com.mobicoolsoft.electronic.store.dto.ImageResponse;
-import com.mobicoolsoft.electronic.store.dto.PageResponse;
+import com.mobicoolsoft.electronic.store.dto.*;
 import com.mobicoolsoft.electronic.store.exception.FileNotAvailableException;
 import com.mobicoolsoft.electronic.store.service.CategoryServiceI;
 import com.mobicoolsoft.electronic.store.service.FileServiceI;
+import com.mobicoolsoft.electronic.store.service.ProductServiceI;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -39,28 +37,64 @@ public class CategoryController {
     @Autowired
     private FileServiceI fileServiceI;
 
+    @Autowired
+    private ProductServiceI productServiceI;
+
     @Value("${category.profile.image.path}")
     private String imagePath;
 
+    @PostMapping("/{categoryId}/products")
+    public ResponseEntity<ProductDto> createProductWithCategory(@Valid @RequestBody ProductDto productDto, @PathVariable String categoryId) {
+        logger.info("Api createProductWithCategory request started");
+        ProductDto product = this.productServiceI.createProductWithCategory(productDto, categoryId);
+        logger.info("Api createProductWithCategory request ended with response : {}", HttpStatus.CREATED);
+        return new ResponseEntity<>(product, HttpStatus.CREATED);
+    }
+
     @PostMapping("/")
     public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+        logger.info("Api createNewUser request started");
         CategoryDto category = this.categoryServiceI.createCategory(categoryDto);
+        logger.info("Api createNewUser request ended with response : {}", HttpStatus.CREATED);
         return new ResponseEntity<>(category, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{categoryId}/products/{productId}")
+    public ResponseEntity<ProductDto> assignCategoryToProduct(@PathVariable String categoryId, @PathVariable String productId){
+        ProductDto productDto = this.productServiceI.assignCategoryToProduct(categoryId, productId);
+        return new ResponseEntity<>(productDto, HttpStatus.OK);
+    }
+
+    /**
+     * @return  products of given category
+     */
+    @GetMapping("/{categoryId}/products")
+    public ResponseEntity<PageResponse<ProductDto>> getProductWithCategory( @PathVariable String categoryId,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
+    ){
+        PageResponse<ProductDto> pageResponse = this.productServiceI.getProductsByCategory(categoryId, pageNumber, pageSize, sortBy, sortDir);
+        return  new ResponseEntity<>(pageResponse, HttpStatus.OK);
+    }
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto, @PathVariable String categoryId) {
+        logger.info("Api updateUser request started for user with userId : {}", categoryId);
         CategoryDto updateCategory = this.categoryServiceI.updateCategory(categoryDto, categoryId);
+        logger.info("Api updateUser request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(updateCategory, HttpStatus.OK);
     }
 
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<ApiResponseMessage> deleteCategory(@PathVariable String categoryId) {
+        logger.info("Api deleteUser request for single user with userId : {}", categoryId);
         this.categoryServiceI.deleteCategory(categoryId);
         ApiResponseMessage apiResponseMessage = ApiResponseMessage.builder()
                 .message("Category" + AppConstants.DELETE_MSG)
                 .success(true)
                 .status(HttpStatus.OK).build();
+        logger.info("Api deleteUser request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);
     }
 
@@ -71,45 +105,66 @@ public class CategoryController {
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORY_BY, required = false) String sortBy,
             @RequestParam(name = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir)
     {
+        logger.info("Api getAllUsers request started");
         PageResponse<CategoryDto> pageResponse = this.categoryServiceI.getAllCategories(pageNumber, pageSize, sortBy, sortDir);
+        logger.info("Api getAllUsers request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable String categoryId) {
+        logger.info("Api getUserById request for User with userId  : {}", categoryId);
         CategoryDto categoryDto = this.categoryServiceI.getCategoryById(categoryId);
+        logger.info("Api getUserById request ended with response : {}", HttpStatus.OK);
         return new ResponseEntity<>(categoryDto, HttpStatus.OK);
     }
 
     @GetMapping("/search/{keyword}")
-    public ResponseEntity<List<CategoryDto>> searchCategoryByKyeword(@PathVariable String keyword) {
-        List<CategoryDto> categoryDtos = this.categoryServiceI.searchCategoryByTitleKeyword(keyword);
-        return new ResponseEntity<>(categoryDtos, HttpStatus.OK);
+    public ResponseEntity<PageResponse<CategoryDto>> searchCategoryByKeyword(@PathVariable String keyword,
+            @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORY_BY, required = false) String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir)
+    {
+        logger.info("Api getUserByNameContaining request for User with keyword : {}", keyword);
+        PageResponse<CategoryDto> pageResponse = this.categoryServiceI.searchCategoryByTitleKeyword(keyword, pageNumber, pageSize, sortBy, sortDir);
+        logger.info("Api getUserByNameContaining request ended with response : {}", HttpStatus.OK);
+        return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
+
     @PostMapping("/upload/images/{categoryId}")
     public ResponseEntity<ImageResponse> uploadCategoryImage(
-            @RequestParam("categoryImage")MultipartFile categoryImage,
+            @RequestParam("categoryImage") MultipartFile categoryImage,
             @PathVariable String categoryId) throws IOException
     {
+        logger.info("Api uploadUserImage request with image : {}", categoryImage);
         CategoryDto categoryDto = this.categoryServiceI.getCategoryById(categoryId);
+        logger.info("user found with userId : {}", categoryId);
         String uploadCategoryImage = this.fileServiceI.uploadImage(imagePath, categoryImage);
+        logger.info("user image successfully upload on server!");
         categoryDto.setCoverImage(uploadCategoryImage);
         this.categoryServiceI.updateCategory(categoryDto, categoryId);
+        logger.info("user image successfully saved in the database!");
         ImageResponse imageResponse = ImageResponse.builder()
                 .imageName(uploadCategoryImage).message("Category" + AppConstants.IMAGE_MSG)
                 .success(true).status(HttpStatus.CREATED).build();
+        logger.info("Api uploadUserImage request ended with response : {}", HttpStatus.CREATED);
         return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
     }
 
     @GetMapping("/images/{categoryId}")
     public void serveCategoryImage(@PathVariable String categoryId, HttpServletResponse response) throws FileNotAvailableException {
+        logger.info("Api serveUserImage request started with input response : {}", response);
         CategoryDto categoryDto = this.categoryServiceI.getCategoryById(categoryId);
+        logger.info("get user image {}", categoryDto.getCoverImage());
         try {
             InputStream serveImage = this.fileServiceI.serveImage(imagePath, categoryDto.getCoverImage());
             response.setContentType(MediaType.IMAGE_JPEG_VALUE);
             StreamUtils.copy(serveImage, response.getOutputStream());
-        }catch (IOException ex){
+        } catch (IOException ex) {
+            logger.info("FileNotFoundException encounter");
             throw new FileNotAvailableException(categoryId);
         }
+        logger.info("Api serveUserImage request ended with input response : {}", response);
     }
 }

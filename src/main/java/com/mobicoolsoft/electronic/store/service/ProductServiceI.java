@@ -4,6 +4,8 @@ import com.mobicoolsoft.electronic.store.dto.CategoryDto;
 import com.mobicoolsoft.electronic.store.dto.PageResponse;
 import com.mobicoolsoft.electronic.store.dto.ProductDto;
 
+import java.util.List;
+
 public interface ProductServiceI {
 
     /**
@@ -11,6 +13,15 @@ public interface ProductServiceI {
      */
     ProductDto createProduct(ProductDto productDto);
 
+    /**
+     *@implNote create product with category
+     */
+    ProductDto createProductWithCategory(ProductDto productDto, String categoryId);
+
+    /**
+     * @implNote assign category to products
+     */
+    ProductDto assignCategoryToProduct(String categoryId, String productId);
 
     /**
      * @implNote update product
@@ -34,6 +45,10 @@ public interface ProductServiceI {
      */
     ProductDto getProductById(String productId);
 
+    /**
+     * @implNote get product by product_id
+     */
+    PageResponse<ProductDto> getProductsByCategory(String categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 
     /**
      * @implNote search products by keyword

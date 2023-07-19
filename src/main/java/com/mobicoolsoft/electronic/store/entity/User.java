@@ -49,7 +49,6 @@ public class User {
 
 
 
-
         /**
          * @return the email as a primary key
          */

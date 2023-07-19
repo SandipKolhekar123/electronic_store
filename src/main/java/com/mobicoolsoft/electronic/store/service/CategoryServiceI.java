@@ -35,5 +35,5 @@ public interface CategoryServiceI {
     /**
      * @implNote search category by keyword
      */
-    List<CategoryDto> searchCategoryByTitleKeyword(String keyword);
+    PageResponse<CategoryDto> searchCategoryByTitleKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 }

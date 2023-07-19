@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,6 +37,7 @@ public class CategoryServiceImpl implements CategoryServiceI {
         String randomId = UUID.randomUUID().toString();
         Category category = this.modelMapper.map(categoryDto, Category.class);
         category.setId(randomId);
+        category.setCreatedBy(categoryDto.getCreatedBy());
         Category savedCategory = this.categoryRepository.save(category);
         return this.modelMapper.map(savedCategory, CategoryDto.class);
     }
@@ -46,6 +48,7 @@ public class CategoryServiceImpl implements CategoryServiceI {
         category.setTitle(categoryDto.getTitle());
         category.setDescription(categoryDto.getDescription());
         category.setCoverImage(categoryDto.getCoverImage());
+        category.setUpdatedBy(categoryDto.getUpdatedBy());
         Category savedCategory = this.categoryRepository.save(category);
         return this.modelMapper.map(savedCategory, CategoryDto.class);
     }
@@ -76,9 +79,15 @@ public class CategoryServiceImpl implements CategoryServiceI {
     }
 
     @Override
-    public List<CategoryDto> searchCategoryByTitleKeyword(String keyword) {
-        List<Category> categories = this.categoryRepository.findByTitleContaining(keyword);
-        List<CategoryDto> categoryDtos = categories.stream().map((category) -> this.modelMapper.map(category, CategoryDto.class)).collect(Collectors.toList());
-        return categoryDtos;
+    public PageResponse<CategoryDto> searchCategoryByTitleKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
+        try{
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+            Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
+            Page<Category> categoryPage = this.categoryRepository.findByTitleContaining(keyword ,pageable);
+            PageResponse<CategoryDto> pageResponse = PageHelper.getPageResponse(categoryPage, CategoryDto.class);
+            return pageResponse;
+        }catch (RuntimeException ex){
+            throw new IllegalArgumentsException(AppConstants.PAGE_ERROR_MSG);
+        }
     }
 }

@@ -1,10 +1,11 @@
 package com.mobicoolsoft.electronic.store.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -12,11 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "categories")
-public class Category {
-
-    @Id
-    @Column(name = "cat_id")
-    private String id;
+public class Category extends BaseEntityAudit{
 
     @Column(name = "cat_title")
     private String title;
@@ -26,5 +23,6 @@ public class Category {
 
     private String coverImage;
 
-
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Product> products = new HashSet<>();
 }

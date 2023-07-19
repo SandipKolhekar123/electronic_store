@@ -152,11 +152,16 @@ public class UserController {
      * @implNote method input user object and return saved user object
      */
     @GetMapping("/search/{keyword}")
-    public ResponseEntity<List<UserDto>> byNameContaining(@PathVariable String keyword) {
+    public ResponseEntity<PageResponse<UserDto>> byNameContaining(@PathVariable String keyword,
+              @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+              @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+              @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_USER_BY, required = false) String sortBy,
+              @RequestParam(name = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir)
+    {
         logger.info("Api getUserByNameContaining request for User with keyword : {}", keyword);
-        List<UserDto> userDtos = this.userServiceI.byNameContaining(keyword);
+        PageResponse<UserDto> pageResponse = this.userServiceI.byNameContaining(keyword, pageNumber, pageSize, sortBy, sortDir);
         logger.info("Api getUserByNameContaining request ended with response : {}", HttpStatus.OK);
-        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+        return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     /**

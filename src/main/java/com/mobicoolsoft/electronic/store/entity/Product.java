@@ -1,9 +1,6 @@
 package com.mobicoolsoft.electronic.store.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
-public class Product {
-
-    @Id
-    @Column(name = "product_id")
-    private String id;
+public class Product extends BaseEntityAudit{
 
     @Column(name = "product_title")
     private String title;
@@ -45,7 +38,8 @@ public class Product {
 
     private Boolean stock;
 
-    private Date addedDate;
+    @ManyToOne
+    @JoinColumn(name = "fk_category_id")
+    private Category category;
 
-    private Date updatedDate;
 }

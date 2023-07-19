@@ -8,6 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -28,4 +34,11 @@ public class CategoryDto {
     @ImageNameValid
     private String coverImage;
 
+    private String createdBy;
+
+    private String updatedBy;
+
+    private Date createdAt;
+
+    private Date updatedAt;
 }

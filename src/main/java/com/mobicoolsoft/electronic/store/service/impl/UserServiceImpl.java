@@ -17,6 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,8 +42,8 @@ public class UserServiceImpl implements UserServiceI {
         logger.info("createUser service execution started");
         String userId = UUID.randomUUID().toString();
         logger.info("userId generated : {}", userId);
-        userDto.setUserId(userId);
         User user = this.userDtoToEntity(userDto);
+        user.setUserId(userId);
         User savedUser = this.userRepository.save(user);
         logger.info("user saved successfully");
         UserDto savedUserDto = this.entityToUserDto(savedUser);
@@ -87,8 +89,8 @@ public class UserServiceImpl implements UserServiceI {
     @Override
     public PageResponse<UserDto> getAllUsers(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         logger.info("getAllUsers service execution started");
-        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         try{
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             //@implNote pageNumber default starts from 0
             Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
             logger.info("get Pageable object with pageNumber {}, pageSize {}", pageNumber, pageSize);
@@ -144,13 +146,23 @@ public class UserServiceImpl implements UserServiceI {
      * @implNote search user by keyword
      */
     @Override
-    public List<UserDto> byNameContaining(String keyword) {
+    public PageResponse<UserDto> byNameContaining(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         logger.info("getUserByKeyword service execution started");
-        List<User> users = this.userRepository.findByNameContaining(keyword);
-        logger.info("User found for matched keyword : {}", keyword);
-        List<UserDto> userDtos = users.stream().map((user) -> this.entityToUserDto(user)).collect(Collectors.toList());
-        logger.info("getUserByKeyword service execution ended");
-        return userDtos;
+        try{
+            Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+            //@implNote pageNumber default starts from 0
+            Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
+            logger.info("get Pageable object with pageNumber {}, pageSize {}", pageNumber, pageSize);
+            Page<User> userPage = this.userRepository.findByNameContaining(keyword, pageable);
+            logger.info("get Page object for User");
+            PageResponse<UserDto> pageResponse = PageHelper.getPageResponse(userPage, UserDto.class);
+            logger.info("get PageResponse<UserDto> process successfully");
+            logger.info("getUserByKeyword service execution ended");
+            return pageResponse;
+        }catch (RuntimeException ex){
+            logger.info("IllegalArgumentException encounter");
+            throw new IllegalArgumentsException(AppConstants.PAGE_ERROR_MSG);
+        }
     }
 
     /**

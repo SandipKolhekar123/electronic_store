@@ -40,7 +40,13 @@ public class ProductDto {
 
     private Boolean stock;
 
-    private Date addedDate;
+    private CategoryDto category;
 
-    private Date updatedDate;
+    private String createdBy;
+
+    private String updatedBy;
+
+    private Date createdAt;
+
+    private Date updatedAt;
 }

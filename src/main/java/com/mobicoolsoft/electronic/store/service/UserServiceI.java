@@ -45,5 +45,5 @@ public interface UserServiceI {
     /**
      *  search user
      */
-    public List<UserDto> byNameContaining(String keyword);
+    public PageResponse<UserDto> byNameContaining(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
 }

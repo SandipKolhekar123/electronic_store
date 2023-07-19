@@ -54,4 +54,6 @@ public class UserDto {
     @ImageNameValid
     private String image;
 
+    private String createdBy;
+    private String updatedBy;
 }

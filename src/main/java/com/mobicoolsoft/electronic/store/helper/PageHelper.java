@@ -22,7 +22,6 @@ public class PageHelper {
      * @return PageResponse<V> object of dtoType <V>
      */
     public static <U,V>PageResponse<V> getPageResponse(Page<U> page, Class<V> dtoType){
-
         List<U> entityList = page.getContent();
         List<V> dtoList = entityList.stream().map((entity) -> new ModelMapper().map(entity, dtoType)).collect(Collectors.toList());
         PageResponse<V> pageResponse = new PageResponse();
