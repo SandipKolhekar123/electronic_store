@@ -1,6 +1,7 @@
 package com.mobicoolsoft.electronic.store.service.impl;
 
 import com.mobicoolsoft.electronic.store.dto.CategoryDto;
+import com.mobicoolsoft.electronic.store.dto.PageResponse;
 import com.mobicoolsoft.electronic.store.entity.Category;
 import com.mobicoolsoft.electronic.store.entity.Product;
 import com.mobicoolsoft.electronic.store.repository.CategoryRepository;
@@ -13,7 +14,12 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -81,10 +87,36 @@ class CategoryServiceImplTest {
 
     @Test
     void deleteCategoryTest() {
+        Mockito.when(categoryRepository.findById("catIdTest")).thenReturn(Optional.of(category));
+        String categoryId = "catIdTest";
+        this.categoryService.deleteCategory(categoryId);
+
+        Mockito.verify(categoryRepository, Mockito.times(1)).delete(category);
     }
 
     @Test
     void getAllCategoriesTest() {
+        Category category1 = Category.builder()
+                .title("Beauty Products")
+                .description("ayurvedic beauty products")
+                .coverImage("xyz.png")
+                .products(Set.of(product))
+                .build();
+        Category category2 = Category.builder()
+                .title("Beauty Products")
+                .description("ayurvedic beauty products")
+                .coverImage("xyz.png")
+                .products(Set.of(product))
+                .build();
+
+        List<Category> categories = Arrays.asList(category, category1, category2);
+        Page<Category> page = new PageImpl<>(categories);
+
+        Mockito.when(categoryRepository.findAll((Pageable) Mockito.any())).thenReturn(page);
+
+        PageResponse<CategoryDto> allCategories = this.categoryService.getAllCategories(1, 1, "title", "desc");
+
+        Assertions.assertEquals(3, allCategories.getContent().size());
     }
 
     @Test
