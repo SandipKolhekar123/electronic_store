@@ -1,0 +1,97 @@
+package com.mobicoolsoft.electronic.store.service.impl;
+
+import com.mobicoolsoft.electronic.store.dto.CategoryDto;
+import com.mobicoolsoft.electronic.store.entity.Category;
+import com.mobicoolsoft.electronic.store.entity.Product;
+import com.mobicoolsoft.electronic.store.repository.CategoryRepository;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.modelmapper.ModelMapper;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest(classes = CategoryServiceImplTest.class)
+class CategoryServiceImplTest {
+
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @InjectMocks
+    private CategoryServiceImpl categoryService;
+
+    @Spy
+    private ModelMapper modelMapper;
+
+    Category category;
+
+    Product product;
+
+    @BeforeEach
+    public void init() {
+        product = Product.builder()
+                .title("godrej")
+                .description("skin powder")
+                .price(19000.00)
+                .discount(20)
+                .stock(true)
+                .live(false)
+                .quantity(150)
+                .image("default.png")
+                .build();
+
+        category = Category.builder()
+                .title("Beauty Products")
+                .description("ayurvedic beauty products")
+                .coverImage("xyz.png")
+                .products(Set.of(product))
+                .build();
+    }
+
+    @Test
+    void createCategoryTest() {
+        Mockito.when(categoryRepository.save(Mockito.any())).thenReturn(category);
+
+        CategoryDto categoryDto = this.categoryService.createCategory(modelMapper.map(category, CategoryDto.class));
+
+        Assertions.assertNotNull(categoryDto);
+        Assertions.assertEquals(category.getTitle(), categoryDto.getTitle());
+    }
+
+    @Test
+    void updateCategoryTest() {
+        Mockito.when(categoryRepository.findById("sandsds")).thenReturn(Optional.of(category));
+        Mockito.when(categoryRepository.save(Mockito.any())).thenReturn(category);
+
+        String categoryId = "sandsds";
+
+        CategoryDto categoryDto = this.categoryService.updateCategory(modelMapper.map(category, CategoryDto.class), categoryId);
+
+        Assertions.assertNotNull(categoryDto);
+        Assertions.assertEquals(category.getTitle(), categoryDto.getTitle());
+    }
+
+    @Test
+    void deleteCategoryTest() {
+    }
+
+    @Test
+    void getAllCategoriesTest() {
+    }
+
+    @Test
+    void getCategoryByIdTest() {
+    }
+
+    @Test
+    void searchCategoryByTitleKeywordTest() {
+    }
+}

@@ -3,6 +3,7 @@ package com.mobicoolsoft.electronic.store.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import java.io.Serializable;

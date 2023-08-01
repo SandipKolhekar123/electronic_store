@@ -2,6 +2,8 @@ package com.mobicoolsoft.electronic.store.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,7 +15,7 @@ import java.util.Date;
 @Setter
 @Getter
 @MappedSuperclass
-public class BaseEntityAudit extends BaseEntity implements Serializable {
+public class BaseEntityAudit extends BaseEntity {
 
     @Column(name = "created_by")
     private String createdBy;

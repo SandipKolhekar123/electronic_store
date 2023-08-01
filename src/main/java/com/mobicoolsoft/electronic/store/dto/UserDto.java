@@ -1,8 +1,13 @@
 package com.mobicoolsoft.electronic.store.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mobicoolsoft.electronic.store.entity.Role;
 import com.mobicoolsoft.electronic.store.validate.ImageNameValid;
 import jakarta.validation.constraints.*;
 import lombok.*;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Sandip Kolhekar
@@ -54,6 +59,13 @@ public class UserDto {
     @ImageNameValid
     private String image;
 
+    private Set<Role> roles = new HashSet<>();
+
     private String createdBy;
+
     private String updatedBy;
+
+    private Date createdAt;
+
+    private Date updatedAt;
 }

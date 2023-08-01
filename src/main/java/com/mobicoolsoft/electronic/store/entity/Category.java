@@ -12,6 +12,7 @@ import java.util.Set;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "categories")
 public class Category extends BaseEntityAudit{
 
