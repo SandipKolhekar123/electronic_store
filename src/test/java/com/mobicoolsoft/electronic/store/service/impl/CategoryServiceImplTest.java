@@ -121,9 +121,16 @@ class CategoryServiceImplTest {
 
     @Test
     void getCategoryByIdTest() {
+        Mockito.when(categoryRepository.findById("catIdTest")).thenReturn(Optional.of(category));
+
+        String categoryId = "catIdTest";
+        CategoryDto categoryDto = this.categoryService.getCategoryById(categoryId);
+
+        Assertions.assertEquals(category.getTitle(), categoryDto.getTitle());
     }
 
     @Test
     void searchCategoryByTitleKeywordTest() {
+
     }
 }
