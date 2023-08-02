@@ -14,9 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -103,8 +101,8 @@ class CategoryServiceImplTest {
                 .products(Set.of(product))
                 .build();
         Category category2 = Category.builder()
-                .title("Beauty Products")
-                .description("ayurvedic beauty products")
+                .title("Apparels")
+                .description("ducky pants")
                 .coverImage("xyz.png")
                 .products(Set.of(product))
                 .build();
@@ -131,6 +129,28 @@ class CategoryServiceImplTest {
 
     @Test
     void searchCategoryByTitleKeywordTest() {
+
+        Category category1 = Category.builder()
+                .title("Beauty Products")
+                .description("ayurvedic beauty products")
+                .coverImage("xyz.png")
+                .products(Set.of(product))
+                .build();
+        Category category2 = Category.builder()
+                .title("Apparels")
+                .description("ducky pants")
+                .coverImage("xyz.png")
+                .products(Set.of(product))
+                .build();
+
+        List<Category> categories = Arrays.asList(category, category1, category2);
+        Page<Category> page = new PageImpl<>(categories);
+
+        Mockito.when(categoryRepository.findByTitleContaining(Mockito.anyString(), (Pageable) Mockito.any())).thenReturn(page);
+
+        PageResponse<CategoryDto> response = this.categoryService.searchCategoryByTitleKeyword("Beauty", 1, 1, "title", "asc");
+
+        Assertions.assertEquals(3, response.getContent().size());
 
     }
 }
