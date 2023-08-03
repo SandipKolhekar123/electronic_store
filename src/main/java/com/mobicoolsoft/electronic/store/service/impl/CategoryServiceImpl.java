@@ -31,6 +31,9 @@ public class CategoryServiceImpl implements CategoryServiceI {
     @Autowired
     private ModelMapper modelMapper;
 
+    /**
+     * @implSpec create new category
+     */
 
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
@@ -42,6 +45,9 @@ public class CategoryServiceImpl implements CategoryServiceI {
         return this.modelMapper.map(savedCategory, CategoryDto.class);
     }
 
+    /**
+     * @implNote update existing category
+     */
     @Override
     public CategoryDto updateCategory(CategoryDto categoryDto, String categoryId) {
         Category category = this.categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
@@ -53,12 +59,19 @@ public class CategoryServiceImpl implements CategoryServiceI {
         return this.modelMapper.map(savedCategory, CategoryDto.class);
     }
 
+    /**
+     * @implNote delete existing category by categoryId
+     */
+
     @Override
     public void deleteCategory(String categoryId) {
         Category category = this.categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
         this.categoryRepository.delete(category);
     }
 
+    /**
+     * @implNote get all categories
+     */
     @Override
     public PageResponse<CategoryDto> getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         try{
@@ -72,12 +85,18 @@ public class CategoryServiceImpl implements CategoryServiceI {
         }
     }
 
+    /**
+     * @implNote get category by categoryId
+     */
     @Override
     public CategoryDto getCategoryById(String categoryId) {
         Category category = this.categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
         return this.modelMapper.map(category, CategoryDto.class);
     }
 
+    /**
+     * @implNote  search category by keyword
+     */
     @Override
     public PageResponse<CategoryDto> searchCategoryByTitleKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         try{
