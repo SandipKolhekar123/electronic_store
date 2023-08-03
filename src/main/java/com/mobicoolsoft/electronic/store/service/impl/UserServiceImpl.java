@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 /**
  * @author Sandip Kolhekar
  * @apiNote User services implementing  class
@@ -44,16 +45,16 @@ public class UserServiceImpl implements UserServiceI {
     @Autowired
     private ModelMapper modelMapper;
 
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
-
     /**
      * @implNote create new user
      */
     @Override
     public UserDto createUser(UserDto userDto) {
-//        generate unique id in string format. A class that represents an immutable
-//         universally unique identifier (UUID). A UUID represents a 128-bit value.
+
+        /**
+         * @implSpec generate unique id in string format. A class that represents an immutable
+         * universally unique identifier (UUID). A UUID represents a 128-bit value.
+         */
         logger.info("createUser service execution started");
         String userId = UUID.randomUUID().toString();
         logger.info("userId generated : {}", userId);
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserServiceI {
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
         logger.info("updateUser service execution started");
-        User user = this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "UserID", userId));
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "UserID", userId));
         logger.info("User find for Id {}", userId);
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail().trim());
@@ -96,21 +97,22 @@ public class UserServiceImpl implements UserServiceI {
     @Override
     public void deleteUser(String userId) {
         logger.info("deleteUser service execution started");
-        User user = this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "UserID", userId));
+        User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "UserID", userId));
         this.userRepository.delete(user);
         logger.info("User deleted  with userId : {}", userId);
         logger.info("deleteUser service execution ended");
     }
+
     /**
      * @implNote get all users
      */
     @Override
     public PageResponse<UserDto> getAllUsers(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         logger.info("getAllUsers service execution started");
-        try{
+        try {
             Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             //@implNote pageNumber default starts from 0
-            Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
+            Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
             logger.info("get Pageable object with pageNumber {}, pageSize {}", pageNumber, pageSize);
             Page<User> userPage = this.userRepository.findAll(pageable);
             logger.info("get Page object for User");
@@ -118,7 +120,7 @@ public class UserServiceImpl implements UserServiceI {
             logger.info("get PageResponse<UserDto> process successfully");
             logger.info("getAllUsers service execution ended");
             return pageResponse;
-        }catch (RuntimeException ex){
+        } catch (RuntimeException ex) {
             logger.info("IllegalArgumentException encounter");
             throw new IllegalArgumentsException(AppConstants.PAGE_ERROR_MSG);
         }
@@ -131,11 +133,12 @@ public class UserServiceImpl implements UserServiceI {
     public UserDto getUserById(String userId) {
         logger.info("getUserById service execution started");
         User user = this.userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "UserID", userId));
-        logger.info("User found successfully for userId : {}",userId);
+        logger.info("User found successfully for userId : {}", userId);
         UserDto userDto = this.modelMapper.map(user, UserDto.class);
         logger.info("getUserById service execution ended");
         return userDto;
     }
+
     /**
      * @implNote get user by email
      */
@@ -143,11 +146,12 @@ public class UserServiceImpl implements UserServiceI {
     public UserDto getUserByEmail(String email) {
         logger.info("getUserByEmail service execution started");
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User", "Email", email));
-        logger.info("User found successfully for email : {}",email);
+        logger.info("User found successfully for email : {}", email);
         UserDto userDto = this.modelMapper.map(user, UserDto.class);
         logger.info("getUserByEmail service execution started");
         return userDto;
     }
+
     /**
      * @implNote get user by email and password
      */
@@ -160,16 +164,17 @@ public class UserServiceImpl implements UserServiceI {
         logger.info("getUserByEmailAndPassword service execution ended");
         return userDto;
     }
+
     /**
      * @implNote search user by keyword
      */
     @Override
     public PageResponse<UserDto> byNameContaining(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         logger.info("getUserByKeyword service execution started");
-        try{
+        try {
             Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
             //@implNote pageNumber default starts from 0
-            Pageable pageable = PageRequest.of(pageNumber-1, pageSize, sort);
+            Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, sort);
             logger.info("get Pageable object with pageNumber {}, pageSize {}", pageNumber, pageSize);
             Page<User> userPage = this.userRepository.findByNameContaining(keyword, pageable);
             logger.info("get Page object for User");
@@ -177,7 +182,7 @@ public class UserServiceImpl implements UserServiceI {
             logger.info("get PageResponse<UserDto> process successfully");
             logger.info("getUserByKeyword service execution ended");
             return pageResponse;
-        }catch (RuntimeException ex){
+        } catch (RuntimeException ex) {
             logger.info("IllegalArgumentException encounter");
             throw new IllegalArgumentsException(AppConstants.PAGE_ERROR_MSG);
         }

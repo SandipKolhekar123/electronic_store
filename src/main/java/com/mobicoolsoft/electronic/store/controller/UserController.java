@@ -29,8 +29,8 @@ import java.util.List;
 
 /**
  * @author Sandip Kolhekar
- * @apiNote build rest controller for user services
- * @since 2021
+ * @apiNote build rest controller layer for user services
+ * @since 2022
  */
 @RestController
 @RequestMapping(AppConstants.USER_URL)
@@ -90,9 +90,12 @@ public class UserController {
     }
 
     /**
-     * @return user list
      * @apiNote get all existing user records from the database
-     * @implNote method return list of users
+     * @param pageNumber
+     * @param pageSize
+     * @param sortBy
+     * @param sortDir
+     * @return PageResponse instance
      */
     @GetMapping("/")
     public ResponseEntity<PageResponse<UserDto>> getAllUsers(
@@ -107,9 +110,9 @@ public class UserController {
     }
 
     /**
-     * @return single user
      * @apiNote get user record for specified id
      * @implNote method input user id and return single record
+     * @return single user
      */
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> getUserById(@PathVariable String userId) {
@@ -150,6 +153,12 @@ public class UserController {
     /**
      * @apiNote search user by keyword for username
      * @implNote method input user object and return saved user object
+     * @param keyword
+     * @param pageNumber
+     * @param pageSize
+     * @param sortBy
+     * @param sortDir
+     * @return PageResponse
      */
     @GetMapping("/search/{keyword}")
     public ResponseEntity<PageResponse<UserDto>> byNameContaining(@PathVariable String keyword,
@@ -165,11 +174,11 @@ public class UserController {
     }
 
     /**
+     * @implNote upload user image by userId
      * @param userImage
      * @param userId
-     * @return ResponseEntity<ImageResponse>
+     * @return ImageResponse
      * @throws IOException
-     * @implNote method to upload user image
      */
     @PostMapping("/images/upload/{userId}")
     public ResponseEntity<ImageResponse> uploadUserImage(
@@ -191,6 +200,12 @@ public class UserController {
         return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * @implNote serve user image by userId
+     * @param userId
+     * @param response
+     * @throws FileNotAvailableException
+     */
     @GetMapping(value = "/image/{userId}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public void serveUserImage(@PathVariable String userId, HttpServletResponse response) throws FileNotAvailableException {
         logger.info("Api serveUserImage request started with input response : {}", response);
