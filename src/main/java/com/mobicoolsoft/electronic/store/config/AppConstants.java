@@ -30,6 +30,15 @@ public class AppConstants {
     public static final String SORT_PRODUCT_BY = "title";
 
 
+    /**
+     * @apiNote setting different roles for user
+     */
+
+    public static final Integer ROLE_ADMIN = 501;
+
+    public static final Integer ROLE_STAFF = 502;
+
+    public static final Integer ROLE_USER = 503;
 
 
 }

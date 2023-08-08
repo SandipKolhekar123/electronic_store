@@ -12,11 +12,18 @@ import org.springframework.context.annotation.Bean;
 public class Configuration {
 
     /**
-     * @implNote ModelMapper bean configuration
      * @return ModelMapper class bean
+     * @implNote ModelMapper bean configuration
      */
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
+
     }
+
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+
 }

@@ -1,9 +1,9 @@
 package com.mobicoolsoft.electronic.store.entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Sandip Kolhekar
@@ -17,10 +17,7 @@ import lombok.*;
 @Getter
 @Builder
 @Table(name = "users")
-public class User {
-
-    @Id
-    private String userId;
+public class User extends BaseEntityAudit{
 
     @Column(name = "user_name")
     private String name;
@@ -40,16 +37,15 @@ public class User {
     @Column(name = "user_image")
     private String image;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name="user_roles",
+    joinColumns=@JoinColumn (name ="user", referencedColumnName = "id" ),
+    inverseJoinColumns = @JoinColumn(name = "role", referencedColumnName = "roleId"))
+    private Set<Role> roles = new HashSet<>();
 
 
 
-
-
-
-
-
-
-        /**
+/**
          * @return the email as a primary key
          */
      /*   @Id

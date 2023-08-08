@@ -1,16 +1,14 @@
 package com.mobicoolsoft.electronic.store.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
@@ -26,7 +24,7 @@ public class Product extends BaseEntityAudit{
     private String image;
 
     @Column(name = "product_price")
-    private Integer price;
+    private Double price;
 
     @Column(name = "product_discount")
     private Integer discount;

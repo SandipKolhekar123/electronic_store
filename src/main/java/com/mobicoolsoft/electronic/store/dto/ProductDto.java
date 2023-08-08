@@ -30,7 +30,7 @@ public class ProductDto {
     @ImageNameValid
     private String image;
 
-    private Integer price;
+    private Double price;
 
     private Integer discount;
 

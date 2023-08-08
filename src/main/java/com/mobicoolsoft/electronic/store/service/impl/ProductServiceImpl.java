@@ -12,6 +12,8 @@ import com.mobicoolsoft.electronic.store.repository.CategoryRepository;
 import com.mobicoolsoft.electronic.store.repository.ProductRepository;
 import com.mobicoolsoft.electronic.store.service.ProductServiceI;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +30,8 @@ import java.util.stream.Stream;
 @Service
 public class ProductServiceImpl implements ProductServiceI {
 
+    private  static Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -39,17 +43,20 @@ public class ProductServiceImpl implements ProductServiceI {
 
     @Override
     public ProductDto createProduct(ProductDto productDto) {
+        logger.info("createProduct service execution started");
         String productId = UUID.randomUUID().toString();
         Product product = this.modelMapper.map(productDto, Product.class);
         product.setId(productId);
         product.setCreatedAt(new Date());
         product.setCreatedBy(productDto.getCreatedBy());
         Product savedProduct = this.productRepository.save(product);
+        logger.info("createProduct service execution ended");
         return this.modelMapper.map(savedProduct, ProductDto.class);
     }
 
     @Override
     public ProductDto createProductWithCategory(ProductDto productDto, String categoryId) {
+        logger.info("createProductWithCategory service execution started with categoryId : {}",categoryId);
         String productId = UUID.randomUUID().toString();
         Category category = this.categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
         Product product = this.modelMapper.map(productDto, Product.class);
@@ -57,20 +64,24 @@ public class ProductServiceImpl implements ProductServiceI {
         product.setCreatedBy(productDto.getCreatedBy());
         product.setCategory(category);
         Product savedProduct = this.productRepository.save(product);
+        logger.info("createProductWithCategory service execution ended");
         return this.modelMapper.map(savedProduct, ProductDto.class);
     }
 
     @Override
     public ProductDto assignCategoryToProduct(String categoryId, String productId) {
+        logger.info("assignCategoryToProduct service execution started with categoryId : {} and productId : {}",categoryId, productId);
         Category category = this.categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
         Product product = this.productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
         product.setCategory(category);
         Product savedProduct = this.productRepository.save(product);
+        logger.info("assignCategoryToProduct service execution started");
         return this.modelMapper.map(savedProduct, ProductDto.class);
     }
 
     @Override
     public ProductDto updateProduct(ProductDto productDto, String productId) {
+        logger.info("updateProduct service execution started with productId : {}", productId);
         Product product = this.productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
         product.setTitle(productDto.getTitle());
         product.setDescription(productDto.getDescription());
@@ -82,12 +93,15 @@ public class ProductServiceImpl implements ProductServiceI {
         product.setStock(productDto.getStock());
         product.setUpdatedBy(productDto.getUpdatedBy());
         Product savedProduct = this.productRepository.save(product);
+        logger.info("updateProduct service execution ended");
         return this.modelMapper.map(savedProduct, ProductDto.class);
     }
 
     @Override
     public void deleteProduct(String productId) {
+        logger.info("deleteProduct service execution started with productId : {}", productId);
         Product product = this.productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
+        logger.info("deleteProduct service execution ended");
         this.productRepository.delete(product);
     }
 

@@ -25,6 +25,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * @author Sandip Kolhekar
+ * @apiNote build rest controller layer for category services
+ * @since 2022
+ */
 @RestController
 @RequestMapping(AppConstants.CATEGORY_URL)
 public class CategoryController {
@@ -43,6 +48,12 @@ public class CategoryController {
     @Value("${category.profile.image.path}")
     private String imagePath;
 
+    /**
+     * @implNote create product for specified category
+     * @param productDto
+     * @param categoryId
+     * @return a productDto
+     */
     @PostMapping("/{categoryId}/products")
     public ResponseEntity<ProductDto> createProductWithCategory(@Valid @RequestBody ProductDto productDto, @PathVariable String categoryId) {
         logger.info("Api createProductWithCategory request started");
@@ -51,6 +62,11 @@ public class CategoryController {
         return new ResponseEntity<>(product, HttpStatus.CREATED);
     }
 
+    /**
+     * @implNote create a category record
+     * @param categoryDto
+     * @return newly created category record
+     */
     @PostMapping("/")
     public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
         logger.info("Api createNewUser request started");
@@ -59,6 +75,12 @@ public class CategoryController {
         return new ResponseEntity<>(category, HttpStatus.CREATED);
     }
 
+    /**
+     * @implNote assign category to the particular product
+     * @param categoryId
+     * @param productId
+     * @return a productDto
+     */
     @PutMapping("/{categoryId}/products/{productId}")
     public ResponseEntity<ProductDto> assignCategoryToProduct(@PathVariable String categoryId, @PathVariable String productId){
         ProductDto productDto = this.productServiceI.assignCategoryToProduct(categoryId, productId);
@@ -66,10 +88,16 @@ public class CategoryController {
     }
 
     /**
-     * @return  products of given category
+     * @implNote get products of category by categoryId
+     * @param categoryId
+     * @param pageNumber
+     * @param pageSize
+     * @param sortBy
+     * @param sortDir
+     * @return pageResponse
      */
     @GetMapping("/{categoryId}/products")
-    public ResponseEntity<PageResponse<ProductDto>> getProductWithCategory( @PathVariable String categoryId,
+    public ResponseEntity<PageResponse<ProductDto>> getProductsWithCategory( @PathVariable String categoryId,
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_PRODUCT_BY, required = false) String sortBy,
@@ -78,6 +106,13 @@ public class CategoryController {
         PageResponse<ProductDto> pageResponse = this.productServiceI.getProductsByCategory(categoryId, pageNumber, pageSize, sortBy, sortDir);
         return  new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
+
+    /**
+     * @implNote update category by categoryId
+     * @param categoryDto
+     * @param categoryId
+     * @return updated category
+     */
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto, @PathVariable String categoryId) {
         logger.info("Api updateUser request started for user with userId : {}", categoryId);
@@ -86,6 +121,11 @@ public class CategoryController {
         return new ResponseEntity<>(updateCategory, HttpStatus.OK);
     }
 
+    /**
+     * @implNote delete category by categoryId
+     * @param categoryId
+     * @return ApiResponseMessage
+     */
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<ApiResponseMessage> deleteCategory(@PathVariable String categoryId) {
         logger.info("Api deleteUser request for single user with userId : {}", categoryId);
@@ -98,6 +138,14 @@ public class CategoryController {
         return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);
     }
 
+    /**
+     * @implNote get all category records
+     * @param pageNumber
+     * @param pageSize
+     * @param sortBy
+     * @param sortDir
+     * @return PageResponse containing list of CategoryDto
+     */
     @GetMapping("/")
     public ResponseEntity<PageResponse<CategoryDto>> getAllCategories(
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
@@ -111,6 +159,11 @@ public class CategoryController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
+    /**
+     * @implNote get category for categoryId
+     * @param categoryId
+     * @return a category
+     */
     @GetMapping("/{categoryId}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable String categoryId) {
         logger.info("Api getUserById request for User with userId  : {}", categoryId);
@@ -119,6 +172,15 @@ public class CategoryController {
         return new ResponseEntity<>(categoryDto, HttpStatus.OK);
     }
 
+    /**
+     * @implNote search category by keyword
+     * @param keyword
+     * @param pageNumber
+     * @param pageSize
+     * @param sortBy
+     * @param sortDir
+     * @return PageResponse containing list of matched CategoryDto
+     */
     @GetMapping("/search/{keyword}")
     public ResponseEntity<PageResponse<CategoryDto>> searchCategoryByKeyword(@PathVariable String keyword,
             @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
@@ -132,6 +194,13 @@ public class CategoryController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
+    /**
+     * @implNote upload category image by categoryId
+     * @param categoryImage
+     * @param categoryId
+     * @return ImageResponse
+     * @throws IOException
+     */
     @PostMapping("/upload/images/{categoryId}")
     public ResponseEntity<ImageResponse> uploadCategoryImage(
             @RequestParam("categoryImage") MultipartFile categoryImage,
@@ -152,6 +221,12 @@ public class CategoryController {
         return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * @implNote serve category image by userId
+     * @param categoryId
+     * @param response
+     * @throws FileNotAvailableException
+     */
     @GetMapping("/images/{categoryId}")
     public void serveCategoryImage(@PathVariable String categoryId, HttpServletResponse response) throws FileNotAvailableException {
         logger.info("Api serveUserImage request started with input response : {}", response);

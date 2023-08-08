@@ -23,6 +23,13 @@ public class FileServiceImpl implements FileServiceI {
 
     private final Logger logger = LoggerFactory.getLogger(FileServiceImpl.class);
 
+    /**
+     * @implNote upload image
+     * @param path
+     * @param file
+     * @return uploaded file name
+     * @throws IOException
+     */
     @Override
     public String uploadImage(String path, MultipartFile file) throws IOException {
         logger.info("uploadImage service started on path {}", path);
@@ -54,6 +61,13 @@ public class FileServiceImpl implements FileServiceI {
         }
     }
 
+    /**
+     * @implNote get image by id
+     * @param path
+     * @param fileName
+     * @return image
+     * @throws FileNotFoundException
+     */
     @Override
     public InputStream serveImage(String path, String fileName) throws FileNotFoundException {
         String fullPath = path + File.separator + fileName;

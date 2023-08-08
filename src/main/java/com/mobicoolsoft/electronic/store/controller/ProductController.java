@@ -25,6 +25,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+/**
+ * @author Sandip Kolhekar
+ * @apiNote build rest controller layer for product services
+ * @since 2022
+ */
 @RestController
 @RequestMapping(AppConstants.PRODUCT_URL)
 public class ProductController {
@@ -40,6 +45,11 @@ public class ProductController {
     @Value("${product.profile.image.path}")
     private String imagePath;
 
+    /**
+     * @implNote create new product
+     * @param productDto
+     * @return newly created product
+     */
     @PostMapping("/")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto) {
         logger.info("Api createNewProduct request started");
@@ -49,13 +59,22 @@ public class ProductController {
     }
 
     /**
-     * @apiNote assign category to product
+     * @apiNote assign category to product by productId and categoryId
+     * @param productId
+     * @param categoryId
+     * @return newly assign category to product
      */
     @PostMapping("/{productId}/category/{categoryId}")
     public ResponseEntity<ProductDto> assignCategoryToProduct(@PathVariable String productId, @PathVariable String categoryId){
         return  null;
     }
 
+    /**
+     * @implNote update existing product by productId
+     * @param productDto
+     * @param productId
+     * @return updated product record
+     */
     @PutMapping("/{productId}")
     public ResponseEntity<ProductDto> updateProduct(@RequestBody ProductDto productDto, @PathVariable String productId) {
         logger.info("Api updateProduct request started for user with productId : {}", productId);
@@ -64,6 +83,11 @@ public class ProductController {
         return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
+    /**
+     * @implNote delete existing product by productId
+     * @param productId
+     * @return ApiResponseMessage instance with response message
+     */
     @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponseMessage> deleteProduct(@PathVariable String productId) {
         logger.info("Api deleteProduct request for single user with productId : {}", productId);
@@ -75,6 +99,14 @@ public class ProductController {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
+    /**
+     * @implNote get all existing products
+     * @param pageNumber
+     * @param pageSize
+     * @param sortBy
+     * @param sortDir
+     * @return PageResponse instance containing ProductDto
+     */
     @GetMapping("/")
     public ResponseEntity<PageResponse<ProductDto>> getAllProducts(
             @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
@@ -88,6 +120,11 @@ public class ProductController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
+    /**
+     * @apiNote fetch product by productId
+     * @param productId
+     * @return a product record
+     */
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable String productId) {
         logger.info("Api getProductById request for User with productId  : {}", productId);
@@ -96,6 +133,15 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
+    /**
+     * @implNote search a product with specified query
+     * @param query
+     * @param pageNumber
+     * @param pageSize
+     * @param sortBy
+     * @param sortDir
+     * @return PageResponse instance containing ProductDto
+     */
     @GetMapping("/search/{query}")
     public ResponseEntity<PageResponse<ProductDto>> searchProduct(@PathVariable String query,
             @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
@@ -109,6 +155,14 @@ public class ProductController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
+    /**
+     * @apiNote fetch all products whose status is live
+     * @param pageNumber
+     * @param pageSize
+     * @param sortBy
+     * @param sortDir
+     * @return PageResponse instance containing ProductDto
+     */
     @GetMapping("/live")
     public ResponseEntity<PageResponse<ProductDto>> getAllLive(
             @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
@@ -119,6 +173,13 @@ public class ProductController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
+    /**
+     * @implNote upload product image file by productId
+     * @param productImage
+     * @param productId
+     * @return ImageResponse instance
+     * @throws IOException
+     */
     @PostMapping(value = "/upload/images/{productId}")
     public ResponseEntity<ImageResponse> uploadProductImage(
             @RequestParam("productImage") MultipartFile productImage,
@@ -139,6 +200,12 @@ public class ProductController {
         return new ResponseEntity<>(imageResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * @implNote serve product image for specified id
+     * @param response as HttpServletResponse
+     * @param productId
+     * @throws FileNotAvailableException
+     */
     @GetMapping("/images/{productId}")
     public void serveProductImage(HttpServletResponse response, @PathVariable String productId) throws FileNotAvailableException {
         logger.info("Api serveUserImage request started with input response : {}", response);
