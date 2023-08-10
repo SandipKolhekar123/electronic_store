@@ -17,7 +17,7 @@ public class ImageNameValidator implements ConstraintValidator<ImageNameValid, S
 
         //logic
         if(value.isBlank()){
-            return  false;
+            return false;
         }else{
             return true;
         }

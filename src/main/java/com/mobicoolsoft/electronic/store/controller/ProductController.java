@@ -59,17 +59,6 @@ public class ProductController {
     }
 
     /**
-     * @apiNote assign category to product by productId and categoryId
-     * @param productId
-     * @param categoryId
-     * @return newly assign category to product
-     */
-    @PostMapping("/{productId}/category/{categoryId}")
-    public ResponseEntity<ProductDto> assignCategoryToProduct(@PathVariable String productId, @PathVariable String categoryId){
-        return  null;
-    }
-
-    /**
      * @implNote update existing product by productId
      * @param productDto
      * @param productId

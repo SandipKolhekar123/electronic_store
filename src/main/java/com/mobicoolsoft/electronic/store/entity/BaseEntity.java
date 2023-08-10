@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Setter
 @Getter
 /**
+ * @implSpec Hibernate Inheritance Mapping
  * @implSpec MappedSuperclass : is used to ensure that the BaseEntity class
  * will not have a separate representation as the table of the extending class.
  */

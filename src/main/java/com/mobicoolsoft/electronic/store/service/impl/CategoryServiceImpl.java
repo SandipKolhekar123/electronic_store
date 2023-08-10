@@ -8,7 +8,10 @@ import com.mobicoolsoft.electronic.store.exception.ResourceNotFoundException;
 import com.mobicoolsoft.electronic.store.helper.PageHelper;
 import com.mobicoolsoft.electronic.store.repository.CategoryRepository;
 import com.mobicoolsoft.electronic.store.service.CategoryServiceI;
+import com.mobicoolsoft.electronic.store.service.ProductServiceI;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +27,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryServiceI {
+
+    private  static Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     @Autowired
     private CategoryRepository categoryRepository;

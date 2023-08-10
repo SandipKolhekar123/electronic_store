@@ -1,5 +1,6 @@
 package com.mobicoolsoft.electronic.store.entity;
 
+import com.mobicoolsoft.electronic.store.validate.ImageNameValid;
 import jakarta.persistence.*;
 import lombok.*;
 
